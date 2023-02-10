@@ -1,16 +1,11 @@
 // Registering Service Worker
 self.addEventListener('install', function (event) {
-  //   console.log('Service Worker: Installing Service Worker ...', event);
-  event.waitUntil(
-    caches.open('static').then(function (cache) {
-      return cache.addAll(['/index.html', '/static/js/bundle.js']);
-    }),
-  );
+  // console.log('Service Worker: Installing Service Worker ...', event);
 });
 
 // Activating
 self.addEventListener('activate', function (event) {
-  //   console.log('Service Worker: Activating Service Worker ....', event);
+  // console.log('Service Worker: Activating Service Worker ....', event);
   return self.clients.claim();
 });
 
@@ -34,7 +29,7 @@ self.addEventListener('fetch', function (event) {
 
 // Push Notifications
 self.addEventListener('push', function (event) {
-  console.log('Push Notification received', event);
+  // console.log('Push Notification received', event);
   var data = { title: 'New!', content: 'Something new happened!', openUrl: '/' };
   if (event.data) {
     data = JSON.parse(event.data.text());
@@ -51,12 +46,12 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   var notification = event.notification;
   var action = event.action;
-  console.log(notification);
+  // console.log(notification);
   if (action === 'confirm') {
-    console.log('Confirm was chosen');
+    // console.log('Confirm was chosen');
     notification.close();
   } else {
-    console.log(action);
+    // console.log(action);
     event.waitUntil(
       clients.matchAll().then(function (clis) {
         var client = clis.find(function (c) {
@@ -74,47 +69,11 @@ self.addEventListener('notificationclick', function (event) {
   }
 });
 
-// Syncing
-self.addEventListener('sync', function (event) {
-  console.log('Background syncing', event);
-  if (event.tag === 'sync-new-posts') {
-    console.log('Syncing new Posts');
-    event.waitUntil(
-      readAllData('sync-posts').then(function (data) {
-        for (var dt of data) {
-          var postData = new FormData();
-          postData.append('id', dt.id);
-          postData.append('title', dt.title);
-          postData.append('location', dt.location);
-          postData.append('rawLocationLat', dt.rawLocation.lat);
-          postData.append('rawLocationLng', dt.rawLocation.lng);
-          postData.append('file', dt.picture, dt.id + '.png');
-          fetch('https://us-central1-pwagram-8f6b1.cloudfunctions.net/storePostData', {
-            method: 'POST',
-            body: postData,
-          })
-            .then(function (res) {
-              console.log('Sent data', res);
-              if (res.ok) {
-                res.json().then(function (resData) {
-                  deleteItemFromData('sync-posts', resData.id);
-                });
-              }
-            })
-            .catch(function (err) {
-              console.log('Error while sending data', err);
-            });
-        }
-      }),
-    );
-  }
-});
-
 // Background Sync
 self.addEventListener('sync', function (event) {
-  console.log('[Service Worker] Background syncing', event);
+  // console.log('[Service Worker] Background syncing', event);
   if (event.tag === 'sync-new-posts') {
-    console.log('[Service Worker] Syncing new Posts');
+    // console.log('[Service Worker] Syncing new Posts');
     event.waitUntil(
       readAllData('sync-posts').then(function (data) {
         for (var dt of data) {
@@ -130,7 +89,7 @@ self.addEventListener('sync', function (event) {
             body: postData,
           })
             .then(function (res) {
-              console.log('Sent data', res);
+              // console.log('Sent data', res);
               if (res.ok) {
                 res.json().then(function (resData) {
                   deleteItemFromData('sync-posts', resData.id);
@@ -138,7 +97,7 @@ self.addEventListener('sync', function (event) {
               }
             })
             .catch(function (err) {
-              console.log('Error while sending data', err);
+              // console.log('Error while sending data', err);
             });
         }
       }),
